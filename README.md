@@ -54,6 +54,9 @@ html2canvas
 #C'est tout ! 🎉
 
 
+<img width="1280" alt="Capture d’écran 2024-11-18 à 04 45 12" src="https://github.com/user-attachments/assets/af57830f-7852-46e1-861d-591d86d79e6f">
+
+<img width="1280" alt="Capture d’écran 2024-11-18 à 04 45 42" src="https://github.com/user-attachments/assets/656f4874-59b9-4bb2-92c2-5dc90e1660e9">
 
 
 #RESULTAT 
