@@ -1,0 +1,11 @@
+# Exclure les dépendances node
+node_modules/
+libs/node_modules/
+
+# Exclure les fichiers temporaires ou système
+.DS_Store
+*.log
+*.lock
+
+# Ignorer d'autres répertoires indésirables si nécessaires
+
