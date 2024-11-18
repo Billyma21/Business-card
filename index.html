@@ -1,0 +1,235 @@
+<html><head>
+    <title>Générateur de Cartes de Visite Professionnelles</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+     <!-- Lien vers le fichier CSS -->
+     <link rel="stylesheet" href="/assets/css/styles.css">
+    
+    </head>
+    <body>
+      <div class="main-container">
+        <div class="form-container">
+          <h1>Générateur de Cartes de Visite Professionnelles</h1>
+    
+          <div class="form-section">
+            <h2>Informations Personnelles</h2>
+            <div class="input-group">
+              <label for="fullName">Nom Complet</label>
+              <input type="text" id="fullName" value="Jean Dupont">
+            </div>
+            <div class="input-group">
+              <label for="profileImage">Photo de Profil</label>
+              <input type="file" id="profileImage" accept="image/*" onchange="handleImageUpload(event)">
+              <button class="reset-image-btn" onclick="resetProfileImage()">
+                <i class="fas fa-trash-alt"></i> Supprimer la photo
+              </button>
+            </div>
+            <div class="input-group">
+              <label for="title">Titre Professionnel</label>
+              <input type="text" id="title" value="Ingénieur Logiciel">
+            </div>
+            <div class="input-group">
+              <label for="bio">Bio Professionnelle</label>
+              <textarea id="bio" rows="3">Passionné par la création de solutions innovantes et la transformation digitale.</textarea>
+            </div>
+          </div>
+    
+          <div class="form-section">
+            <h2>Coordonnées</h2>
+            <div class="input-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" value="jean@exemple.be">
+            </div>
+            <div class="input-group">
+              <label for="phone">Téléphone</label>
+              <input type="tel" id="phone" value="+32 42 34 56 78">
+            </div>
+            <div class="input-group">
+              <label for="linkedin">URL LinkedIn</label>
+              <input type="url" id="linkedin" value="linkedin.com/in/jeandupont">
+            </div>
+            <div class="input-group">
+              <label for="website">Site Web</label>
+              <input type="url" id="website" value="jeandupont.be">
+            </div>
+          </div>
+    
+          <div class="color-picker-container">
+            <div class="color-picker-group">
+              <label>Couleur Principale</label>
+              <input type="color" id="colorPicker1" value="#0077b5">
+              <div class="color-preview" id="preview1" style="background-color: #0077b5"></div>
+            </div>
+            <div class="color-picker-group">
+              <label>Couleur Secondaire</label>
+              <input type="color" id="colorPicker2" value="#00a0dc">
+              <div class="color-preview" id="preview2" style="background-color: #00a0dc"></div>
+            </div>
+          </div>
+    
+          <div class="buttons-container">
+            <button onclick="generateCard()"><i class="fas fa-sync-alt"></i> Mettre à jour</button>
+            <button onclick="downloadCard()"><i class="fas fa-download"></i> Télécharger</button>
+          </div>
+        </div>
+    
+        <div class="preview-container">
+          <div id="businessCard" class="business-card">
+            <div class="profile-info">
+              <div class="profile-picture">
+                <i class="fas fa-user"></i>
+              </div>
+              <div>
+                <div class="name" id="nameDisplay">Jean Dupont</div>
+                <div class="title" id="titleDisplay">Ingénieur Logiciel</div>
+                <div id="bioDisplay">Passionné par la création de solutions innovantes et la transformation digitale.</div>
+                <div class="contact-details">
+                  <i class="fas fa-envelope"></i>
+                  <span id="emailDisplay">jean@exemple.com</span>
+                  <i class="fas fa-phone"></i>
+                  <span id="phoneDisplay">+32 42 34 56 78</span>
+                  <i class="fab fa-linkedin"></i>
+                  <span id="linkedinDisplay">linkedin.com/in/jeandupont</span>
+                  <i class="fas fa-globe"></i>
+                  <span id="websiteDisplay">jeandupont.be</span>
+                </div>
+              </div>
+              <div class="social-links">
+                <i class="fas fa-envelope"></i>
+                <i class="fas fa-phone"></i>
+                <i class="fab fa-linkedin"></i>
+                <i class="fas fa-globe"></i>
+              </div>
+            </div>
+            <div class="qr-container">
+              <div class="qr-box" id="linkedinQRBox" style="display: none;">
+                <div id="linkedinQRCode" class="qr-code"></div>
+                <div class="qr-label">Profil LinkedIn</div>
+              </div>
+              <div class="qr-box" id="websiteQRBox" style="display: none;">
+                <div id="websiteQRCode" class="qr-code"></div>
+                <div class="qr-label">Site Web</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <script>
+        let linkedinQR = null;
+        let websiteQR = null;
+    
+        function generateQRCode(element, text) {
+          if (element.querySelector('.qr-code')) {
+            element.querySelector('.qr-code').innerHTML = '';
+          }
+          return new QRCode(element.querySelector('.qr-code'), {
+            text: text,
+            width: 160,
+            height: 160,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H,
+            margin: 1
+          });
+        }
+    
+        function handleImageUpload(event) {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const profilePicture = document.querySelector('.profile-picture');
+              profilePicture.innerHTML = `<img src="${e.target.result}" alt="Photo de profil">`;
+            }
+            reader.readAsDataURL(file);
+          }
+        }
+    
+        function resetProfileImage() {
+          const profilePicture = document.querySelector('.profile-picture');
+          profilePicture.innerHTML = '<i class="fas fa-user"></i>';
+        }
+    
+        function generateCard() {
+          const name = document.getElementById('fullName').value;
+          const title = document.getElementById('title').value;
+          const bio = document.getElementById('bio').value;
+          const linkedin = document.getElementById('linkedin').value;
+          const website = document.getElementById('website').value;
+    
+          document.getElementById('nameDisplay').textContent = name;
+          document.getElementById('titleDisplay').textContent = title;
+          document.getElementById('bioDisplay').textContent = bio;
+    
+          // Update contact details
+          document.getElementById('emailDisplay').textContent = document.getElementById('email').value;
+          document.getElementById('phoneDisplay').textContent = document.getElementById('phone').value;
+          document.getElementById('linkedinDisplay').textContent = document.getElementById('linkedin').value;
+          document.getElementById('websiteDisplay').textContent = document.getElementById('website').value;
+    
+          const linkedinQRBox = document.getElementById('linkedinQRBox');
+          const websiteQRBox = document.getElementById('websiteQRBox');
+    
+          // Handle LinkedIn QR Code
+          if (linkedin && linkedin.trim() !== '') {
+            linkedinQRBox.style.display = 'flex';
+            linkedinQR = generateQRCode(linkedinQRBox, linkedin);
+          } else {
+            linkedinQRBox.style.display = 'none';
+          }
+    
+          // Handle Website QR Code
+          if (website && website.trim() !== '') {
+            websiteQRBox.style.display = 'flex';
+            websiteQR = generateQRCode(websiteQRBox, website);
+          } else {
+            websiteQRBox.style.display = 'none';
+          }
+        }
+    
+        async function downloadCard() {
+          const card = document.getElementById('businessCard');
+          const canvas = await html2canvas(card, {
+            scale: 4,
+            useCORS: true,
+            backgroundColor: null,
+            logging: false,
+            width: card.offsetWidth,
+            height: card.offsetHeight,
+            removeContainer: true,
+            allowTaint: true
+          });
+          
+          const link = document.createElement('a');
+          link.download = 'carte-visite.png';
+          link.href = canvas.toDataURL('image/png', 1.0);
+          link.click();
+        }
+    
+        function changeCardStyle(color1, color2) {
+          document.documentElement.style.setProperty('--primary-color', color1);
+          document.querySelector('.business-card').style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+        }
+    
+        document.getElementById('colorPicker1').addEventListener('input', function(e) {
+          document.getElementById('preview1').style.backgroundColor = e.target.value;
+          const color2 = document.getElementById('colorPicker2').value;
+          changeCardStyle(e.target.value, color2);
+        });
+    
+        document.getElementById('colorPicker2').addEventListener('input', function(e) {
+          document.getElementById('preview2').style.backgroundColor = e.target.value;
+          const color1 = document.getElementById('colorPicker1').value;
+          changeCardStyle(color1, e.target.value);
+        });
+    
+        // Initialize card on load
+        generateCard();
+      </script>
+    </body>
+    </html>
